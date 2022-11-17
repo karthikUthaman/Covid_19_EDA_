@@ -1,0 +1,97 @@
+Select location,date,total_cases,(total_deaths/total_cases)*100 as DeathPercentage
+FROM Covid.dbo.CovidDeaths A
+where location like '%India%'
+and continent is not null
+and A.date>='2022-01-01';
+
+
+-- What Countries has the highest Covid  infection rate compared to Population
+
+
+
+
+Select Location, Population, MAX(total_cases) as HighestInfectionCount,  Max((total_cases/population))*100 as PercentPopulationInfected
+From covid.DBO.CovidDeaths
+Group by Location, Population
+order by PercentPopulationInfected desc
+
+
+
+-- Countries with highest death from covid-----
+
+Select Location, MAX(cast(Total_deaths as int)) as TotalDeathCount
+From DBO.CovidDeaths
+Where continent is not null 
+And Total_deaths is not null
+Group by Location
+order by TotalDeathCount desc
+
+------Death probability-------
+Select cast(date as date),(total_deaths/total_cases)*100 as Myanmar
+	FROM Covid.dbo.CovidDeaths A
+	where location like '%Myanmar%'
+	and continent is not null
+	and A.date>='2021-01-01'
+	order by date asc
+
+
+---vaccination percentage---
+r-barplot(totalvaccination$vaccinationpercent[1:10],names.arg =c(totalvaccination$location[1:10]))
+
+Select cv.location,max(cast(people_fully_vaccinated_per_hundred as float)) as vaccinationpercent
+from Covid.dbo.Vaccination cv
+Where continent is not null 
+And cv.total_vaccinations is not null
+group by cv.location
+order by vaccinationpercent desc
+
+
+
+
+-------Test rate in india-----
+select location,new_tests,cast(date as date) as date
+from Covid.dbo.Vaccination cd
+where new_tests is not null
+and location like '%India%'
+order by cd.date asc
+
+
+-----world data------
+select sum(new_cases) as total_cases,sum(convert(int,new_deaths))as totaldeath,
+sum(convert(int,new_deaths))/sum(new_cases)*100 as worlddeathpercentage,
+sum(new_cases)/7836600000*100 as worldcasespercentage,
+7836600000 as total_population
+from Covid.dbo.CovidDeaths
+where continent is not null
+order by 1,2;
+
+
+
+------total deaths count in different countries-----
+Select Location, MAX(cast(Total_deaths as int)) as TotalDeathCount
+From Covid.dbo.CovidDeaths
+Where continent is not null 
+And Total_deaths is not null
+Group by Location
+order by TotalDeathCount desc
+
+
+
+-----Vaccination percentage----
+Select cv.location,max(cast(people_fully_vaccinated_per_hundred as float)) as vaccinationpercent
+from Covid.dbo.Vaccination cv
+Where continent is not null 
+And cv.total_vaccinations is not null
+and cv.people_fully_vaccinated_per_hundred <=100.00
+group by cv.location
+order by vaccinationpercent desc
+
+
+
+-----Death spike in india----
+select location,new_deaths,cast(date as date) as date
+from Covid.dbo.CovidDeaths cd
+where new_deaths is not null
+and location like '%India%'
+order by cd.date asc
+
